@@ -1,4 +1,4 @@
-module gitlab.com/mynerva/author-cli
+module github.com/mynerva-io/author-cli
 
 go 1.15
 
