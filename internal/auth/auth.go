@@ -2,7 +2,8 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -18,7 +19,7 @@ type Auth struct {
 func getApiTokenCacheFile() (string, error) {
 	currentUser, err := user.Current()
 	if err != nil {
-		return "", fmt.Errorf("unable to determine auth file: %w", err)
+		return "", errors.Wrap(err, "unable to determine auth file")
 	}
 	dir := path.Join(currentUser.HomeDir, ".mynerva")
 	_ = os.MkdirAll(dir, 0700)
@@ -34,32 +35,34 @@ func GetAuth() (*Auth, error) {
 
 	file, err := getApiTokenCacheFile()
 	if err != nil {
-		return nil, fmt.Errorf("unable to determine auth file: %w", err)
+		return nil, err
 	}
 
 	if _, err := os.Stat(file); os.IsNotExist(err) {
+		log.Debugf("authentication cache file does not exist")
 		return nil, nil
 	}
 
 	fp, err := os.Open(file)
 	if err != nil {
-		return nil, fmt.Errorf("unable to open auth file (%s): %w", file, err)
+		return nil, errors.Wrapf(err, "unable to open auth file (%s)", file)
 	}
 	defer fp.Close()
 	data, err := ioutil.ReadAll(fp)
 	if err != nil {
-		return nil, fmt.Errorf("unable to read auth file (%s): %w", file, err)
+		return nil, errors.Wrapf(err, "unable to read auth file (%s)", file)
 	}
 
 	var auth Auth
 	err = json.Unmarshal(data, &auth)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse auth file (%s): %w", file, err)
+		return nil, errors.Wrapf(err, "unable to parse auth file (%s)", file)
 	}
 
-	if auth.Expiration.After(time.Now()) {
+	if time.Now().After(auth.Expiration) {
+		log.Debugf("removing expired authentication cache")
 		if err := os.Remove(file); err != nil {
-			return nil, fmt.Errorf("failed to remove expired auth file (%s): %w", file, err)
+			return nil, errors.Wrapf(err, "failed to remove expired auth file (%s)", file)
 		}
 	}
 
@@ -88,7 +91,7 @@ func SaveAuth(auth *Auth) error {
 
 	err = ioutil.WriteFile(file, b, 0600)
 	if err != nil {
-		return fmt.Errorf("failed to write auth file (%s): %w", file, err)
+		return errors.Wrapf(err, "failed to write auth file (%s)", file)
 	}
 
 	return nil

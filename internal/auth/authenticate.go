@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/mynerva-io/author-cli/internal/api"
 	"github.com/mynerva-io/author-cli/internal/constants"
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
 	"io/ioutil"
 	"net/http"
@@ -32,10 +33,8 @@ func AuthenticateFromUserInput() (*Auth, error) {
 	}
 	fmt.Println()
 	password := strings.TrimSpace(string(passwordBytes))
-	fmt.Printf("email: %s, password: %s, err: %v\n", email, password, err)
 
 	resp, err := apiAuthenticate(email, password)
-	fmt.Printf("resp: %#v, %v", resp, err)
 
 	if err != nil {
 		return nil, err
@@ -43,7 +42,7 @@ func AuthenticateFromUserInput() (*Auth, error) {
 
 	expiration, err := api.ParseDateTime(resp.Token.ExpiresAt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse expiration time: %w", err)
+		return nil, errors.Wrap(err, "failed to parse expiration time")
 	}
 
 	auth := Auth{
@@ -53,10 +52,10 @@ func AuthenticateFromUserInput() (*Auth, error) {
 
 	err = SaveAuth(&auth)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save auth state: %w", err)
+		return nil, errors.Wrap(err, "failed to save auth state")
 	}
 
-	return nil, nil
+	return &auth, nil
 }
 
 const apiLoginEndpoint = constants.API_HOST + "/auth/login"
@@ -86,7 +85,7 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		Password: password,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal apiLoginRequest: %w", err)
+		return nil, errors.Wrap(err, "failed to marshal apiLoginRequest")
 	}
 	req, err := http.NewRequest("POST", apiLoginEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -96,19 +95,19 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 	req.Header.Set("User-Agent", "mynerva-author-cli")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request to api failed: %w", err)
+		return nil, errors.Wrap(err, "request to api failed")
 	}
 	defer resp.Body.Close()
 	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read api response: %w", err)
+		return nil, errors.Wrap(err, "failed to read api response")
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		var payload apiLoginErrorResponse
 		err := json.Unmarshal(respData, &payload)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal api error response: %w", err)
+			return nil, errors.Wrap(err, "failed to unmarshal api error response")
 		}
 		return nil, fmt.Errorf("authentication failed: %s (%s)", payload.Type, payload.Description)
 	}
@@ -118,7 +117,7 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 	var payload apiLoginTokenResponse
 	err = json.Unmarshal(respData, &payload)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal api response: %w", err)
+		return nil, errors.Wrap(err, "failed to unmarshal api response")
 	}
 
 	var token string

@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/mynerva-io/author-cli/internal/auth"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -40,10 +40,10 @@ var authStatusCmd = &cobra.Command{
 			return err
 		}
 		if auth == nil {
-			fmt.Printf("Not authenticated.")
-			return nil
+			return errors.New("not authenticated")
 		}
-		fmt.Printf("Authenticated (until %s\n", auth.Expiration.Format(time.RFC1123))
+
+		fmt.Printf("Authenticated (until %s)\n", auth.Expiration.Format(time.RFC1123))
 		return nil
 	},
 }

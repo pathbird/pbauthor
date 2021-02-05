@@ -1,8 +1,8 @@
 package codex
 
 import (
-	"fmt"
 	"github.com/pelletier/go-toml"
+	"github.com/pkg/errors"
 	"io/ioutil"
 )
 
@@ -19,7 +19,7 @@ func UnmarshallConfig(data []byte) (*Config, error) {
 	config := &Config{}
 	err := toml.Unmarshal(data, config)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse codex config: %w", err)
+		return nil, errors.Wrap(err, "failed to parse codex config")
 	}
 	return config, nil
 }
