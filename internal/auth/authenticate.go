@@ -86,7 +86,7 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		return nil, errors.Wrap(err, "failed to marshal apiLoginRequest")
 	}
 
-	endpoint := fmt.Sprintf(config.MynervaApiHost, "/auth/login")
+	endpoint := fmt.Sprintf(config.MynervaApiHost, "/api/auth/login")
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err

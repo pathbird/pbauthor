@@ -21,7 +21,19 @@ func UnmarshallConfig(data []byte) (*Config, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse codex config")
 	}
+
+	if err := config.Upload.validate(); err != nil {
+		return nil, err
+	}
+
 	return config, nil
+}
+
+func (u *UploadConfig) validate() error {
+	if u.CodexCategory == "" {
+		return errors.New("upload.codex_category must be specified")
+	}
+	return nil
 }
 
 func ReadConfigFile(filename string) (*Config, error) {

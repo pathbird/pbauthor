@@ -1,3 +1,14 @@
 package config
 
-var MynervaApiHost = "https://mynerva.io/api"
+import (
+	"os"
+	"strings"
+)
+
+var MynervaApiHost = (func() string {
+	value, set := os.LookupEnv("MYNERVA_API_HOST")
+	if set {
+		return strings.TrimRight(value, "/")
+	}
+	return "https://mynerva.io"
+})()

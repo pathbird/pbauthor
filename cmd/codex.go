@@ -5,6 +5,7 @@ import (
 	"github.com/mynerva-io/author-cli/internal/api"
 	"github.com/mynerva-io/author-cli/internal/auth"
 	"github.com/mynerva-io/author-cli/internal/codex"
+	"github.com/mynerva-io/author-cli/internal/config"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"path/filepath"
@@ -44,7 +45,9 @@ var codexUploadCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("codexId: %s", res.CodexId)
+		fmt.Printf("codexId: %s\n", res.CodexId)
+		fmt.Printf("url: %s/codex/%s\n", config.MynervaApiHost, res.CodexId)
+
 		return nil
 	},
 }

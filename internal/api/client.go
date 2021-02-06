@@ -22,7 +22,11 @@ type Client struct {
 
 func New(authToken string) *Client {
 	log.Debugf("creating API client using host: %s", config.MynervaApiHost)
-	return &Client{authToken: authToken, host: config.MynervaApiHost, httpClient: http.DefaultClient}
+	return &Client{
+		authToken:  authToken,
+		host:       fmt.Sprintf("%s/api", config.MynervaApiHost),
+		httpClient: http.DefaultClient,
+	}
 }
 
 type request struct {

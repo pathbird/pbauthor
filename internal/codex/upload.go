@@ -21,8 +21,20 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 	}
 	log.Debugf("got %d codex files", len(files))
 
+	configFilePath := filepath.Join(opts.Dir, "codex.toml")
+	if _, err := os.Stat(configFilePath); err != nil {
+		if os.IsNotExist(err) {
+			return nil, errors.New("no _codex.toml file found - please create one")
+		}
+		return nil, errors.Wrap(err, "unable to stat codex.toml")
+	}
+	config, err := ReadConfigFile(configFilePath)
+	if err != nil {
+		return nil, err
+	}
+
 	req := &api.UploadCodexRequest{
-		CodexCategoryId: "foo",
+		CodexCategoryId: config.Upload.CodexCategory,
 		Files: files,
 	}
 
