@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mynerva-io/author-cli/internal/api"
-	"github.com/mynerva-io/author-cli/internal/constants"
+	"github.com/mynerva-io/author-cli/internal/config"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
 	"io/ioutil"
@@ -58,8 +58,6 @@ func AuthenticateFromUserInput() (*Auth, error) {
 	return &auth, nil
 }
 
-const apiLoginEndpoint = constants.API_HOST + "/auth/login"
-
 type apiLoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -87,7 +85,9 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal apiLoginRequest")
 	}
-	req, err := http.NewRequest("POST", apiLoginEndpoint, bytes.NewBuffer(reqBody))
+
+	endpoint := fmt.Sprintf(config.MynervaApiHost, "/auth/login")
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}

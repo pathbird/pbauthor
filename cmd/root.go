@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mynerva-io/author-cli/internal/config"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -25,7 +26,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	initFlags()
+
 	initAuth(rootCmd)
 	initCodex(rootCmd)
 
@@ -37,6 +39,11 @@ func Execute() {
 		_, _ = fmt.Fprintf(os.Stderr, format, err)
 		os.Exit(1)
 	}
+}
+
+func initFlags() {
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().StringVar(&config.MynervaApiHost, "api-host", config.MynervaApiHost, "Mynerva API host")
 }
 
 func setUpLog(verbose bool) error {

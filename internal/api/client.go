@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/mynerva-io/author-cli/internal/constants"
+	"github.com/mynerva-io/author-cli/internal/config"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -21,7 +21,8 @@ type Client struct {
 }
 
 func New(authToken string) *Client {
-	return &Client{authToken: authToken, host: constants.API_HOST, httpClient: http.DefaultClient}
+	log.Debugf("creating API client using host: %s", config.MynervaApiHost)
+	return &Client{authToken: authToken, host: config.MynervaApiHost, httpClient: http.DefaultClient}
 }
 
 type request struct {
