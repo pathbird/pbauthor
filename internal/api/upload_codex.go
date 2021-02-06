@@ -15,8 +15,12 @@ func (c *Client) UploadCodex(r *UploadCodexRequest) (*UploadCodexResponse, error
 	res, err := c.postMultipart(&multipartRequest{
 		route:  "author/upload-codex",
 		fields: fields,
+		files: r.Files,
 	})
 	if err != nil {
+		return nil, err
+	}
+	if err := res.StatusError(); err != nil {
 		return nil, err
 	}
 	resp := &UploadCodexResponse{}

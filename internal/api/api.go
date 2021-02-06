@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/pkg/errors"
+	"mime"
 	"time"
 )
 
@@ -12,4 +13,10 @@ func ParseDateTime(input string) (time.Time, error) {
 		return t, errors.Wrap(err, "failed to parse DateTime")
 	}
 	return t, nil
+}
+
+func isJsonContentType(contentType string) bool {
+	// Ignore the possible error here, since error implies *not* JSON
+	mediatype, _, _ := mime.ParseMediaType(contentType)
+	return mediatype == "application/json"
 }

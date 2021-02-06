@@ -40,6 +40,7 @@ func Execute() {
 }
 
 func setUpLog(verbose bool) error {
+	println("setUpLog")
 	if verbose {
 		log.SetLevel(log.DebugLevel)
 		log.Debugf("enabled debug logging")
