@@ -1,4 +1,4 @@
-package cmd
+package codex
 
 import (
 	"fmt"
@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"path/filepath"
 )
-
-var codexCmd = &cobra.Command{
-	Use:   "codex",
-	Short: "Work with codices",
-}
 
 var codexUploadCmd = &cobra.Command{
 	Use: "upload <path>",
@@ -50,10 +45,4 @@ var codexUploadCmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func initCodex(cmd *cobra.Command) {
-	codexCmd.AddCommand(codexUploadCmd)
-
-	cmd.AddCommand(codexCmd)
 }

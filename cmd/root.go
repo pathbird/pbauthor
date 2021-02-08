@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mynerva-io/author-cli/cmd/auth"
+	"github.com/mynerva-io/author-cli/cmd/codex"
 	"github.com/mynerva-io/author-cli/internal/config"
 	"github.com/spf13/cobra"
 	"os"
@@ -12,9 +14,9 @@ import (
 var verbose bool
 
 var rootCmd = &cobra.Command{
-	Use:   "mynerva-author",
+	Use:           "mynerva-author",
 	SilenceErrors: true,
-	SilenceUsage: true,
+	SilenceUsage:  true,
 
 	// Setup before running any other command
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -28,8 +30,8 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	initFlags()
 
-	initAuth(rootCmd)
-	initCodex(rootCmd)
+	auth.InitAuthCmd(rootCmd)
+	codex.InitCodexCmd(rootCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		format := "error: %s\n"
