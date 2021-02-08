@@ -12,7 +12,7 @@ import (
 )
 
 type Auth struct {
-	ApiToken string `json:"apiToken"`
+	ApiToken   string    `json:"apiToken"`
 	Expiration time.Time `json:"expirationTime"`
 }
 

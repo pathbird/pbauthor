@@ -17,13 +17,13 @@ func buildGraphQLFragment(t reflect.Type) (string, error) {
 
 func TestReflectGraphql(t *testing.T) {
 	type Cat struct {
-		ID string `json:"id"`
+		ID   string `json:"id"`
 		Name string `json:"name"`
 	}
 
 	type Person struct {
-		ID string `json:"id"`
-		Cats []Cat `json:"cats"`
+		ID   string `json:"id"`
+		Cats []Cat  `json:"cats"`
 	}
 
 	frag, err := buildGraphQLFragment(reflect.TypeOf(&Cat{}))
@@ -46,7 +46,7 @@ func TestReflectGraphql(t *testing.T) {
 func TestReflectGraphQLWithArgs(t *testing.T) {
 	type NodeQuery struct {
 		Node struct {
-			ID string `json:"id"`
+			ID       string `json:"id"`
 			TypeName string `json:"__typename"`
 		} `json:"node" args:"id ID!"`
 	}

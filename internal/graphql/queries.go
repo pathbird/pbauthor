@@ -23,7 +23,7 @@ func (c *Client) QueryViewerUser(ctx context.Context) (*User, error) {
 type queryCoursesRes struct {
 	Viewer struct {
 		User struct {
-			ID string `json:"id"`
+			ID      string       `json:"id"`
 			Courses []CourseEdge `json:"courses" args:"roles [CourseRole!]"`
 		} `json:"user"`
 	} `json:"viewer"`

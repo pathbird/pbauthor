@@ -35,7 +35,7 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 
 	req := &api.UploadCodexRequest{
 		CodexCategoryId: config.Upload.CodexCategory,
-		Files: files,
+		Files:           files,
 	}
 
 	res, err := client.UploadCodex(req)

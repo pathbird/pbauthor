@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-
 var fragmentCache = make(map[reflect.Type]string)
 
 type BuildQueryOpt func(builder *queryBuilder)
+
 func WithQueryName(name string) BuildQueryOpt {
 	return func(builder *queryBuilder) {
 
@@ -59,21 +59,22 @@ func BuildQuery(t reflect.Type, opts ...BuildQueryOpt) (string, error) {
 }
 
 type graphQLVariable struct {
-	name string
+	name        string
 	graphQLType string
 }
 
 type OperationType string
+
 const (
-	Query OperationType = "query"
+	Query    OperationType = "query"
 	Mutation OperationType = "mutation"
 )
 
 type queryBuilder struct {
 	operation OperationType
 	queryName string
-	body strings.Builder
-	vars []graphQLVariable
+	body      strings.Builder
+	vars      []graphQLVariable
 }
 
 func (qb *queryBuilder) addFragment(t reflect.Type) error {
@@ -158,7 +159,7 @@ func parseArgString(s string) (*graphQLVariable, error) {
 		return nil, errors.Wrapf(err, "invalid GraphQL arg annotation: %s", s)
 	}
 	return &graphQLVariable{
-		name: name,
+		name:        name,
 		graphQLType: vartype,
 	}, nil
 }

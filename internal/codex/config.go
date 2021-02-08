@@ -12,7 +12,7 @@ type Config struct {
 
 type UploadConfig struct {
 	CodexCategory string `toml:"codex_category"`
-	Name string `toml:"name"`
+	Name          string `toml:"name"`
 }
 
 func UnmarshallConfig(data []byte) (*Config, error) {

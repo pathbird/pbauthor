@@ -26,7 +26,7 @@ func NewClient(auth *auth.Auth) *Client {
 	}
 	return &Client{
 		Client: client,
-		auth: auth,
+		auth:   auth,
 	}
 }
 
@@ -44,11 +44,11 @@ func (c *Client) queryAndUnmarshall(ctx context.Context, v interface{}) error {
 	if err != nil {
 		return errors.Wrap(err, "couldn't build GraphQL fragment")
 	}
-	req := transport.NewRequest( frag)
+	req := transport.NewRequest(frag)
 	return c.Run(ctx, req, v)
 }
 
-type runOption func (req *transport.Request)
+type runOption func(req *transport.Request)
 
 func withVariable(name string, value interface{}) runOption {
 	return func(req *transport.Request) {
