@@ -3,6 +3,7 @@ module github.com/mynerva-io/author-cli
 go 1.15
 
 require (
+	github.com/manifoldco/promptui v0.8.0
 	github.com/pelletier/go-toml v1.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.2.0

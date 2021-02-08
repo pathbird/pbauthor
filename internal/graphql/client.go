@@ -8,6 +8,7 @@ import (
 	"github.com/mynerva-io/author-cli/internal/graphql/graphql_reflect"
 	"github.com/mynerva-io/author-cli/internal/graphql/transport"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"reflect"
 )
 
@@ -16,14 +17,14 @@ type Client struct {
 	auth *auth.Auth
 }
 
-func NewClient(auth *auth.Auth) Client {
+func NewClient(auth *auth.Auth) *Client {
 	client := transport.NewClient(
 		fmt.Sprintf("%s/graphql", config.MynervaApiHost),
 	)
 	client.Log = func(s string) {
-		fmt.Printf("graphql client: %s\n", s)
+		log.Debugf("[graphql client] %s\n", s)
 	}
-	return Client{
+	return &Client{
 		Client: client,
 		auth: auth,
 	}
