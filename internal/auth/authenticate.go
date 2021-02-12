@@ -1,39 +1,18 @@
 package auth
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/martian/log"
 	"github.com/mynerva-io/author-cli/internal/api"
 	"github.com/mynerva-io/author-cli/internal/config"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/ssh/terminal"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"strings"
-	"syscall"
 )
 
-func AuthenticateFromUserInput() (*Auth, error) {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Printf("email: ")
-	email, err := reader.ReadString('\n')
-	if err != nil {
-		return nil, err
-	}
-	email = strings.TrimSpace(email)
-
-	fmt.Printf("password: ")
-	passwordBytes, err := terminal.ReadPassword(syscall.Stdin)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println()
-	password := strings.TrimSpace(string(passwordBytes))
-
+func AuthenticateWithPassword(email, password string) (*Auth, error) {
 	resp, err := apiAuthenticate(email, password)
 
 	if err != nil {
@@ -86,10 +65,10 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		return nil, errors.Wrap(err, "failed to marshal apiLoginRequest")
 	}
 
-	endpoint := fmt.Sprintf(config.MynervaApiHost, "/api/auth/login")
+	endpoint := fmt.Sprintf("%s%s", config.MynervaApiHost, "/api/auth/login")
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "failed to construct login request")
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "mynerva-author-cli")
@@ -109,10 +88,10 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to unmarshal api error response")
 		}
-		return nil, fmt.Errorf("authentication failed: %s (%s)", payload.Type, payload.Description)
+		return nil, errors.Errorf("authentication failed: %s (%s)", payload.Type, payload.Description)
 	}
 
-	fmt.Println(resp.Header.Get("Set-Cookie"))
+	log.Debugf("Got cookie: %s", resp.Header.Get("Set-Cookie"))
 
 	var payload apiLoginTokenResponse
 	err = json.Unmarshal(respData, &payload)
@@ -128,7 +107,7 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		}
 	}
 	if token == "" {
-		return nil, fmt.Errorf("api login returned success, but didn't include a token cookie")
+		return nil, errors.New("api login returned success, but didn't include an auth_token cookie")
 	}
 	payload.Token.Token = token
 

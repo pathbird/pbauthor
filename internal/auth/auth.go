@@ -79,6 +79,7 @@ func GetAuthApiToken() (string, error) {
 }
 
 func SaveAuth(auth *Auth) error {
+	authCache = auth
 	file, err := getApiTokenCacheFile()
 	if err != nil {
 		return err
