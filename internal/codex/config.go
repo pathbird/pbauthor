@@ -3,30 +3,69 @@ package codex
 import (
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 type Config struct {
 	Upload UploadConfig `toml:"upload"`
+
+	configFile string
 }
 
 type UploadConfig struct {
 	CodexCategory string `toml:"codex_category"`
 	Name          string `toml:"name"`
+
+	// The id of the codex (if being re-uploaded)
+	CodexId string `toml:"codex_id"`
 }
 
-func UnmarshallConfig(data []byte) (*Config, error) {
-	config := &Config{}
-	err := toml.Unmarshal(data, config)
+func (c *Config) Unmarshal(data []byte) error {
+	err := toml.Unmarshal(data, c)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse codex config")
+		return errors.Wrap(err, "failed to parse codex config")
 	}
 
-	if err := config.Upload.validate(); err != nil {
-		return nil, err
+	if err := c.Upload.validate(); err != nil {
+		return errors.Wrap(err, "failed to validate codex config")
+	}
+	return nil
+}
+
+func (c *Config) UnmarshalFromFile(filename string) error {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	err = c.Unmarshal(data)
+	if err != nil {
+		return err
+	}
+	c.configFile = filename
+
+	log.Debugf("read config file: %#v", c)
+	return nil
+}
+
+func (c *Config) Save() error {
+	if c.configFile == "" {
+		return errors.New("cannot save codex config: no file selected")
 	}
 
-	return config, nil
+	data, err := toml.Marshal(c)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal codex config")
+	}
+
+	err = ioutil.WriteFile(c.configFile, data, 0x666)
+	if err != nil {
+		return errors.Wrapf(err, "failed to save codex config file (%s)", c.configFile)
+	}
+
+	return nil
 }
 
 func (u *UploadConfig) validate() error {
@@ -36,10 +75,17 @@ func (u *UploadConfig) validate() error {
 	return nil
 }
 
-func ReadConfigFile(filename string) (*Config, error) {
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
+func GetOrInitCodexConfig(dirname string) (*Config, error) {
+	configFilePath := filepath.Join(dirname, "codex.toml")
+	if _, err := os.Stat(configFilePath); err != nil {
+		if os.IsNotExist(err) {
+			return nil, errors.New("init codex config not implemented")
+		}
+		return nil, errors.Wrap(err, "unable to stat codex.toml")
+	}
+	config := &Config{}
+	if err := config.UnmarshalFromFile(configFilePath); err != nil {
 		return nil, err
 	}
-	return UnmarshallConfig(data)
+	return config, nil
 }

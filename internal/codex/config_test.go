@@ -11,7 +11,8 @@ name = "Intro to Foo-ology"
 `)
 
 func TestUnmarshallConfig(t *testing.T) {
-	config, err := UnmarshallConfig(testConfigSrc)
+	config := &Config{}
+	err := config.Unmarshal(testConfigSrc)
 	if err != nil {
 		t.Error(err)
 		return
