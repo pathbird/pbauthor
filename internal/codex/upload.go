@@ -26,6 +26,13 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 		return nil, err
 	}
 
+	// TODO:
+	// 		We should request a confirmation before doing the upload.
+	//		This will help make sure the author is aware of what course
+	//		they're uploading to (e.g., in case they try to re-upload
+	//		an old codex and intend to upload it to a new course but
+	//		but the config still points to the old course).
+
 	req := &api.UploadCodexRequest{
 		CodexCategoryId: config.Upload.CodexCategory,
 		Files:           files,
@@ -35,6 +42,11 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 	res, err := client.UploadCodex(req)
 	if err != nil {
 		return nil, err
+	}
+
+	config.Upload.CodexId = res.CodexId
+	if err := config.Save(); err != nil {
+		return nil, errors.Wrap(err, "codex upload succeeded, but failed to save codex config file")
 	}
 
 	return res, nil

@@ -16,11 +16,11 @@ type Config struct {
 }
 
 type UploadConfig struct {
-	CodexCategory string `toml:"codex_category"`
-	Name          string `toml:"name"`
+	CodexCategory string `toml:"codex_category,omitempty"`
+	Name          string `toml:"name,omitempty"`
 
 	// The id of the codex (if being re-uploaded)
-	CodexId string `toml:"codex_id"`
+	CodexId string `toml:"codex_id,omitempty"`
 }
 
 func (c *Config) Unmarshal(data []byte) error {
@@ -38,7 +38,7 @@ func (c *Config) Unmarshal(data []byte) error {
 func (c *Config) UnmarshalFromFile(filename string) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "failed to read codex config file (%s)", filename)
 	}
 	err = c.Unmarshal(data)
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *Config) Save() error {
 		return errors.Wrap(err, "failed to marshal codex config")
 	}
 
-	err = ioutil.WriteFile(c.configFile, data, 0x666)
+	err = ioutil.WriteFile(c.configFile, data, 0666)
 	if err != nil {
 		return errors.Wrapf(err, "failed to save codex config file (%s)", c.configFile)
 	}
@@ -79,7 +79,7 @@ func GetOrInitCodexConfig(dirname string) (*Config, error) {
 	configFilePath := filepath.Join(dirname, "codex.toml")
 	if _, err := os.Stat(configFilePath); err != nil {
 		if os.IsNotExist(err) {
-			return nil, errors.New("init codex config not implemented")
+			return initConfig(configFilePath)
 		}
 		return nil, errors.Wrap(err, "unable to stat codex.toml")
 	}
