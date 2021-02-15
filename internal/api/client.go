@@ -61,7 +61,7 @@ func (s StatusError) Error() string {
 }
 
 func (s StatusError) Description() string {
-	d := s.error.Description
+	d := s.error.Message
 	if d == "" {
 		return "<unknown>"
 	}
@@ -77,6 +77,7 @@ func (r *response) StatusError() error {
 		if err != nil {
 			return err
 		}
+		log.Debugf("error (%d): %s", r.httpResponse.StatusCode, errorResponse.Verbose())
 		return errors.WithStack(&StatusError{
 			res:   r,
 			error: errorResponse,
@@ -86,8 +87,17 @@ func (r *response) StatusError() error {
 }
 
 type ErrorResponse struct {
-	Error       string `json:"error"`
-	Description string `json:"description"`
+	Error   string          `json:"error"`
+	Message string          `json:"message"`
+	Details json.RawMessage `json:"details"`
+}
+
+func (r *ErrorResponse) String() string {
+	return fmt.Sprintf("error (%s): %s", r.Error, r.Message)
+}
+
+func (r *ErrorResponse) Verbose() string {
+	return fmt.Sprintf("error (%s): %s (details: %s)", r.Error, r.Message, r.Details)
 }
 
 func (r *response) unmarshalErrorBody() (*ErrorResponse, error) {
