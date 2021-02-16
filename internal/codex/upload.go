@@ -15,16 +15,16 @@ type UploadCodexOptions struct {
 }
 
 func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodexResponse, error) {
-	files, err := getCodexFiles(&Config{}, opts.Dir)
-	if err != nil {
-		return nil, err
-	}
-	log.Debugf("got %d codex files", len(files))
-
 	config, err := GetOrInitCodexConfig(opts.Dir)
 	if err != nil {
 		return nil, err
 	}
+
+	files, err := getCodexFiles(config, opts.Dir)
+	if err != nil {
+		return nil, err
+	}
+	log.Debugf("got %d codex files", len(files))
 
 	// TODO:
 	// 		We should request a confirmation before doing the upload.
@@ -52,6 +52,10 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 	return res, nil
 }
 
+const maxFiles = 20
+
+// Get all the files associated with the codex.
+// Recursively walks the filesystem starting at `dir`.
 func getCodexFiles(_ *Config, dir string) ([]api.FileRef, error) {
 	var files []api.FileRef
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -79,6 +83,9 @@ func getCodexFiles(_ *Config, dir string) ([]api.FileRef, error) {
 			return errors.Wrapf(err, "couldn't determine relative file path: %s", path)
 		}
 
+		if len(files) > maxFiles {
+			return errors.Errorf("too many codex files (exceeds limit: %d)", maxFiles)
+		}
 		files = append(files, api.FileRef{
 			Name:   relpath,
 			FsPath: path,
