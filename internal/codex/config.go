@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+const ConfigFileName = "codex.toml"
+
 type Config struct {
 	Upload UploadConfig `toml:"upload"`
 
@@ -76,12 +78,12 @@ func (u *UploadConfig) validate() error {
 }
 
 func GetOrInitCodexConfig(dirname string) (*Config, error) {
-	configFilePath := filepath.Join(dirname, "codex.toml")
+	configFilePath := filepath.Join(dirname, ConfigFileName)
 	if _, err := os.Stat(configFilePath); err != nil {
 		if os.IsNotExist(err) {
-			return initConfig(configFilePath)
+			return initConfig(dirname)
 		}
-		return nil, errors.Wrap(err, "unable to stat codex.toml")
+		return nil, errors.Wrap(err, "unable to stat codex config file")
 	}
 	config := &Config{}
 	if err := config.UnmarshalFromFile(configFilePath); err != nil {

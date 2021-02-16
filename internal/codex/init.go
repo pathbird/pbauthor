@@ -5,9 +5,33 @@ import (
 	"github.com/mynerva-io/author-cli/internal/auth"
 	"github.com/mynerva-io/author-cli/internal/course"
 	"github.com/mynerva-io/author-cli/internal/graphql"
+	"github.com/pkg/errors"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
-func initConfig(configFile string) (*Config, error) {
+// Initialize a new codex config file
+func initConfig(dirname string) (*Config, error) {
+	// Look for a codex file before initializing
+	files, err := ioutil.ReadDir(dirname)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list files")
+	}
+
+	var codexSourceFile string
+	for _, file := range files {
+		if isCodexSourceFile(file) {
+			codexSourceFile = file.Name()
+			break
+		}
+	}
+
+	if codexSourceFile == "" {
+		return nil, errors.Errorf("directory (%s) does not contain a codex source file", dirname)
+	}
+
+	configFile := filepath.Join(dirname, ConfigFileName)
 	conf := &Config{
 		configFile: configFile,
 	}
@@ -39,4 +63,8 @@ func initConfig(configFile string) (*Config, error) {
 		return nil, err
 	}
 	return conf, nil
+}
+
+func isCodexSourceFile(file os.FileInfo) bool {
+	return !file.IsDir() && filepath.Ext(file.Name()) == "ipynb"
 }
