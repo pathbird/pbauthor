@@ -37,7 +37,13 @@ scoop:
     owner: mynerva-io
     name: scoop-bucket
 
-  commit_author:
+  commit_author: &commit_author
     email: goreleaserbot@mynerva.io
 
   homepage: "https://mynerva.io/"
+
+brews:
+  - tap:
+      owner: mynerva-io
+      name: homebrew-tap
+    commit_author: *commit_author
