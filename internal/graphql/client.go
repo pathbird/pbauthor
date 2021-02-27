@@ -39,8 +39,8 @@ func (c *Client) Run(ctx context.Context, req *transport.Request, res interface{
 	return c.Client.Run(ctx, req, res)
 }
 
-func (c *Client) queryAndUnmarshall(ctx context.Context, v interface{}) error {
-	frag, err := graphql_reflect.BuildQuery(reflect.TypeOf(v))
+func (c *Client) queryAndUnmarshall(ctx context.Context, v interface{}, opts ...graphql_reflect.BuildQueryOpt) error {
+	frag, err := graphql_reflect.BuildQuery(reflect.TypeOf(v), opts...)
 	if err != nil {
 		return errors.Wrap(err, "couldn't build GraphQL fragment")
 	}

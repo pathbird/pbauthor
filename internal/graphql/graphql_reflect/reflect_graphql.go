@@ -8,13 +8,11 @@ import (
 	"strings"
 )
 
-var fragmentCache = make(map[reflect.Type]string)
-
 type BuildQueryOpt func(builder *queryBuilder)
 
 func WithQueryName(name string) BuildQueryOpt {
 	return func(builder *queryBuilder) {
-
+		builder.queryName = name
 	}
 }
 
