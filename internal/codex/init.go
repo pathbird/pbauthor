@@ -66,5 +66,6 @@ func initConfig(dirname string) (*Config, error) {
 }
 
 func isCodexSourceFile(file os.FileInfo) bool {
-	return !file.IsDir() && filepath.Ext(file.Name()) == "ipynb"
+	ext := filepath.Ext(file.Name())
+	return !file.IsDir() && ext == ".ipynb"
 }
