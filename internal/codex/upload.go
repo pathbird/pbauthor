@@ -14,15 +14,15 @@ type UploadCodexOptions struct {
 	Dir string
 }
 
-func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodexResponse, error) {
+func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodexResponse, *api.CodexParseFailedError, error) {
 	config, err := GetOrInitCodexConfig(opts.Dir)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	files, err := getCodexFiles(config, opts.Dir)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	log.Debugf("got %d codex files", len(files))
 
@@ -39,17 +39,20 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 		CodexId:         config.Upload.CodexId,
 	}
 
-	res, err := client.UploadCodex(req)
+	res, parseErr, err := client.UploadCodex(req)
+	if parseErr != nil {
+		return nil, parseErr, nil
+	}
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	config.Upload.CodexId = res.CodexId
 	if err := config.Save(); err != nil {
-		return nil, errors.Wrap(err, "codex upload succeeded, but failed to save codex config file")
+		return nil, nil, errors.Wrap(err, "codex upload succeeded, but failed to save codex config file")
 	}
 
-	return res, nil
+	return res, nil, nil
 }
 
 const maxFiles = 20

@@ -3,6 +3,7 @@ module github.com/mynerva-io/author-cli
 go 1.15
 
 require (
+	github.com/fatih/color v1.7.0
 	github.com/google/martian v2.1.0+incompatible
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/lunixbochs/vtclean v1.0.0 // indirect

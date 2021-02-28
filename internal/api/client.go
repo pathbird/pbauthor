@@ -71,21 +71,23 @@ func (s StatusError) Description() string {
 var _ error = (*StatusError)(nil)
 
 // Return an error if the HTTP status code indicates an error (i.e., 4xx or 5xx code).
-func (r *response) StatusError() error {
+func (r *response) StatusError() (*StatusError, error) {
 	if r.httpResponse.StatusCode >= 400 {
 		errorResponse, err := r.unmarshalErrorBody()
 		if err != nil {
-			return err
+			return nil, err
 		}
 		log.Debugf("error (%d): %s", r.httpResponse.StatusCode, errorResponse.Verbose())
-		return errors.WithStack(&StatusError{
+		return &StatusError{
 			res:   r,
 			error: errorResponse,
-		})
+		}, nil
 	}
-	return nil
+	return nil, nil
 }
 
+// A generic error returned by the API
+// Consumers can inspect the value of `Error` and unmarshall `Details` as appropriate.
 type ErrorResponse struct {
 	Error   string          `json:"error"`
 	Message string          `json:"message"`
