@@ -73,6 +73,7 @@ var codexUploadCmd = &cobra.Command{
 
 func init() {
 	codexUploadCmd.Flags().BoolVarP(&skipConfirmation, "yes", "y", false, "don't ask for confirmation")
+	Cmd.AddCommand(codexUploadCmd)
 }
 
 var (

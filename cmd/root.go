@@ -11,7 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var verbose bool
+// flag vars
+var (
+	verbose bool
+)
 
 var rootCmd = &cobra.Command{
 	Use:           "mynerva-author",
@@ -28,11 +31,6 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	initFlags()
-
-	auth.InitAuthCmd(rootCmd)
-	codex.InitCodexCmd(rootCmd)
-
 	if err := rootCmd.Execute(); err != nil {
 		format := "error: %s\n"
 		if verbose {
@@ -43,9 +41,12 @@ func Execute() {
 	}
 }
 
-func initFlags() {
+func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&config.MynervaApiHost, "api-host", config.MynervaApiHost, "Mynerva API host")
+
+	rootCmd.AddCommand(auth.Cmd)
+	rootCmd.AddCommand(codex.Cmd)
 }
 
 func setUpLog(verbose bool) error {

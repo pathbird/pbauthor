@@ -27,6 +27,10 @@ var authLoginCmd = &cobra.Command{
 	},
 }
 
+func init() {
+	Cmd.AddCommand(authLoginCmd)
+}
+
 type authLoginPromptResult struct {
 	email    string
 	password string

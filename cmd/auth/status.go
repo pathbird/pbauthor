@@ -25,3 +25,7 @@ var authStatusCmd = &cobra.Command{
 		return nil
 	},
 }
+
+func init() {
+	Cmd.AddCommand(authStatusCmd)
+}
