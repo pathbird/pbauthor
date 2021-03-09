@@ -14,13 +14,14 @@ builds:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - "-X 'github.com/mynerva-io/author-cli/internal/version.Version={{ .Version }}'"
 archives:
   - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+      darwin: macos
 checksum:
   name_template: 'checksums.txt'
 snapshot:

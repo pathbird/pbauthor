@@ -5,6 +5,7 @@ import (
 	"github.com/mynerva-io/author-cli/cmd/auth"
 	"github.com/mynerva-io/author-cli/cmd/codex"
 	"github.com/mynerva-io/author-cli/internal/config"
+	"github.com/mynerva-io/author-cli/internal/version"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -26,6 +27,7 @@ var rootCmd = &cobra.Command{
 		if err := setUpLog(verbose); err != nil {
 			panic(err)
 		}
+		version.CheckVersionAndPrintUpgradeNotice()
 		return nil
 	},
 }
@@ -45,6 +47,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&config.MynervaApiHost, "api-host", config.MynervaApiHost, "Mynerva API host")
 
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(auth.Cmd)
 	rootCmd.AddCommand(codex.Cmd)
 }
