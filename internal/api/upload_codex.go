@@ -60,14 +60,15 @@ func (c *Client) UploadCodex(r *UploadCodexRequest) (*UploadCodexResponse, *Code
 		return nil, nil, err
 	}
 	if statusError != nil {
-		if statusError.error.Error != "MySTParseFailedErr" {
-			return nil, nil, errors.Errorf("unknown error returned from API: %s", statusError.error.Error)
+		e := statusError.error.Error
+		if e == "MySTParseFailedErr" || e == "CodexASTParseFailedErr" {
+			var parseError CodexParseFailedError
+			if err := json.Unmarshal(statusError.error.Details, &parseError); err != nil {
+				return nil, nil, errors.Wrap(err, "failed to unmarshal codex parse error details")
+			}
+			return nil, &parseError, nil
 		}
-		var parseError CodexParseFailedError
-		if err := json.Unmarshal(statusError.error.Details, &parseError); err != nil {
-			return nil, nil, errors.Wrap(err, "failed to unmarshal codex parse error details")
-		}
-		return nil, &parseError, nil
+		return nil, nil, errors.Errorf("unknown error returned from API: %s", statusError.error.Error)
 	}
 	resp := &UploadCodexResponse{}
 	err = res.UnmarshalJson(resp)
