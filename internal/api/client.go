@@ -99,13 +99,25 @@ func (r *ErrorResponse) String() string {
 }
 
 func (r *ErrorResponse) Verbose() string {
-	return fmt.Sprintf("error (%s): %s (details: %s)", r.Error, r.Message, r.Details)
+	msg := fmt.Sprintf("error (%s): %s", r.Error, r.Message)
+	if string(r.Details) != "" {
+		msg += fmt.Sprintf(" (details: %s)", r.Details)
+	}
+	return msg
 }
 
 func (r *response) unmarshalErrorBody() (*ErrorResponse, error) {
 	contentType := r.httpResponse.Header.Get("Content-Type")
 	if !isJsonContentType(contentType) {
-		return nil, errors.Errorf("malformed api error response (unknown content-type: %s)", contentType)
+		switch r.httpResponse.StatusCode {
+		case 413:
+			return &ErrorResponse{
+				Error:   "PayloadTooLarge",
+				Message: "the request payload was too large",
+				Details: nil,
+			}, nil
+		}
+		return nil, errors.Errorf("unknown api error response (status: %s, content-type: %s)", r.httpResponse.Status, contentType)
 	}
 
 	var errorResponse ErrorResponse

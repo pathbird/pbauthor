@@ -68,7 +68,10 @@ func (c *Client) UploadCodex(r *UploadCodexRequest) (*UploadCodexResponse, *Code
 			}
 			return nil, &parseError, nil
 		}
-		return nil, nil, errors.Errorf("unknown error returned from API: %s", statusError.error.Error)
+		if statusError.error.Error == "" {
+			return nil, nil, errors.Errorf("API returned an unknown error")
+		}
+		return nil, nil, errors.Errorf("API returned an error: %s %s", statusError.error.Error, statusError.error.Message)
 	}
 	resp := &UploadCodexResponse{}
 	err = res.UnmarshalJson(resp)

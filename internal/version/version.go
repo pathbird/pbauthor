@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var Version string
+var Version string = "<development>"
 
 const upgradeUrl = "https://github.com/mynerva-io/author-cli/blob/main/docs/install.md#upgrade"
 
