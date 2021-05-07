@@ -29,6 +29,11 @@ type CodexParseError struct {
 	Error          string `json:"error"`
 	Message        string `json:"message"`
 	SourcePosition string `json:"sourcePosition"`
+	SourceInfo struct{
+		SourceContext struct {
+			Lines []string `json:"lines"`
+		} `json:"sourceContext"`
+	} `json:"sourceInfo"`
 }
 
 type CodexParseFailedError struct {

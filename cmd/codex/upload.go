@@ -59,11 +59,16 @@ var codexUploadCmd = &cobra.Command{
 		if parseErr != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Failed to parse codex (%d issues):\n", len(parseErr.Errors))
 			for _, e := range parseErr.Errors {
-				_, _ = fmt.Fprintf(os.Stderr, "  - %s\n    (%s", red(e.Message), faint(e.Error))
+				_, _ = fmt.Fprintf(os.Stderr, "- %s\n  (%s", red(e.Message), blue(e.Error))
 				if e.SourcePosition != "" {
 					_, _ = fmt.Fprintf(os.Stderr, " at %s", cyan(e.SourcePosition))
 				}
+
 				_, _ = fmt.Fprintf(os.Stderr, ")\n")
+
+				for _, line := range e.SourceInfo.SourceContext.Lines {
+					_, _ = fmt.Fprintf(os.Stderr, "  %s %s\n", faint(">"), line)
+				}
 			}
 			os.Exit(1)
 		}
@@ -84,4 +89,5 @@ var (
 	red   = color.New(color.FgRed, color.Bold).SprintFunc()
 	cyan  = color.New(color.FgCyan).SprintFunc()
 	faint = color.New(color.Faint).SprintFunc()
+	blue = color.New(color.FgBlue).SprintfFunc()
 )
