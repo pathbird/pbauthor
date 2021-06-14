@@ -1,7 +1,7 @@
 package codex
 
 import (
-	"github.com/mynerva-io/author-cli/internal/api"
+	"github.com/pathbird/pbauthor/internal/api"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"os"

@@ -2,9 +2,9 @@ package codex
 
 import (
 	"context"
-	"github.com/mynerva-io/author-cli/internal/auth"
-	"github.com/mynerva-io/author-cli/internal/course"
-	"github.com/mynerva-io/author-cli/internal/graphql"
+	"github.com/pathbird/pbauthor/internal/auth"
+	"github.com/pathbird/pbauthor/internal/course"
+	"github.com/pathbird/pbauthor/internal/graphql"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"

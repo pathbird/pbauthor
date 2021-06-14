@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mynerva-io/author-cli/cmd"
+	"github.com/pathbird/pbauthor/cmd"
 )
 
 func main() {

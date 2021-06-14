@@ -2,7 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"github.com/mynerva-io/author-cli/internal/auth"
+	"github.com/pathbird/pbauthor/internal/auth"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"time"

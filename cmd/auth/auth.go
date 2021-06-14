@@ -6,6 +6,6 @@ import (
 
 var Cmd = &cobra.Command{
 	Use:   "auth",
-	Short: "Authenticate with the Mynerva API",
-	Long:  "Authenticate with the Mynerva API.",
+	Short: "Authenticate with the Pathbird API",
+	Long:  "Authenticate with the Pathbird API.",
 }

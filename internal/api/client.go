@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/mynerva-io/author-cli/internal/config"
+	"github.com/pathbird/pbauthor/internal/config"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -21,10 +21,10 @@ type Client struct {
 }
 
 func New(authToken string) *Client {
-	log.Debugf("creating API client using host: %s", config.MynervaApiHost)
+	log.Debugf("creating API client using host: %s", config.PathbirdApiHost)
 	return &Client{
 		authToken:  authToken,
-		host:       fmt.Sprintf("%s/api", config.MynervaApiHost),
+		host:       fmt.Sprintf("%s/api", config.PathbirdApiHost),
 		httpClient: http.DefaultClient,
 	}
 }
@@ -148,7 +148,7 @@ func (r *response) UnmarshalJson(target interface{}) error {
 	return nil
 }
 
-const userAgent = `mynerva-author-cli`
+const userAgent = `pbauthor`
 
 func (c *Client) postJson(r *request) (*response, error) {
 	reqBody, err := json.Marshal(r.body)
@@ -193,7 +193,7 @@ func (c *Client) postMultipart(r *multipartRequest) (*response, error) {
 	}
 	for _, file := range r.files {
 		// We just always add files underneath the "files" key since that's what every
-		// Mynerva API endpoint expects
+		// Pathbird API endpoint expects
 		log.Debugf("adding file: %s", file.Name)
 		err := file.addToWriter("files", w)
 		if err != nil {

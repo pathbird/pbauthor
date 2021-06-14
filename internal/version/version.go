@@ -17,7 +17,7 @@ import (
 
 var Version string = "<development>"
 
-const upgradeUrl = "https://github.com/mynerva-io/author-cli/blob/main/docs/install.md#upgrade"
+const upgradeUrl = "https://github.com/pathbird/pbauthor/blob/main/docs/install.md#upgrade"
 
 // TODO:
 //		We should cache this result for a while (a day?) so that we don't hit the GitHub API
@@ -26,7 +26,7 @@ func getLatestVersion() (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(
-		ctx, "GET", "https://api.github.com/repos/mynerva-io/author-cli/releases/latest", nil)
+		ctx, "GET", "https://api.github.com/repos/pathbird/pbauthor/releases/latest", nil)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to create HTTP request")
 	}
@@ -66,14 +66,14 @@ func CheckVersionAndPrintUpgradeNotice() {
 		mag := color.New(color.Bold, color.FgMagenta)
 		_, _ = fmt.Fprint(
 			os.Stderr,
-			mag.Sprint(" >> A new version of mynerva-author is available: "),
+			mag.Sprint(" >> A new version of pbauthor is available: "),
 			color.RedString("%s", current),
 			mag.Sprintf("%s", " => "),
 			color.GreenString("%s", latest),
 			mag.Sprintf("\n >> %s\n", upgradeUrl),
 		)
 	} else {
-		log.Debugf("mynerva-author is up to date: current=%s, latest=%s", current, latest)
+		log.Debugf("pbauthor is up to date: current=%s, latest=%s", current, latest)
 	}
 }
 

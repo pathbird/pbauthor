@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"github.com/manifoldco/promptui/list"
-	"github.com/mynerva-io/author-cli/internal/graphql"
+	"github.com/pathbird/pbauthor/internal/graphql"
 	"github.com/pkg/errors"
 	"strings"
 )

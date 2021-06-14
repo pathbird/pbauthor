@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mynerva-io/author-cli/internal/version"
+	"github.com/pathbird/pbauthor/internal/version"
 	"github.com/spf13/cobra"
 )
 

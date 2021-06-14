@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mynerva-io/author-cli/cmd/auth"
-	"github.com/mynerva-io/author-cli/cmd/codex"
-	"github.com/mynerva-io/author-cli/internal/config"
-	"github.com/mynerva-io/author-cli/internal/version"
+	"github.com/pathbird/pbauthor/cmd/auth"
+	"github.com/pathbird/pbauthor/cmd/codex"
+	"github.com/pathbird/pbauthor/internal/config"
+	"github.com/pathbird/pbauthor/internal/version"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -18,7 +18,7 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:           "mynerva-author",
+	Use:           "pbauthor",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 
@@ -45,7 +45,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().StringVar(&config.MynervaApiHost, "api-host", config.MynervaApiHost, "Mynerva API host")
+	rootCmd.PersistentFlags().StringVar(&config.PathbirdApiHost, "api-host", config.PathbirdApiHost, "Pathbird API host")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(auth.Cmd)

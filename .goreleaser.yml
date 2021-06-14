@@ -1,11 +1,9 @@
-project_name: mynerva-author
+project_name: pbauthor
 
 # Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod download
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
   - env:
@@ -18,7 +16,7 @@ builds:
       - amd64
       - arm64
     ldflags:
-      - "-X 'github.com/mynerva-io/author-cli/internal/version.Version={{ .Version }}'"
+      - "-X 'github.com/pathbird/pbauthor/internal/version.Version={{ .Version }}'"
 archives:
   - replacements:
       darwin: macos
@@ -35,16 +33,16 @@ changelog:
 
 scoop:
   bucket:
-    owner: mynerva-io
+    owner: pathbird
     name: scoop-bucket
 
   commit_author: &commit_author
-    email: goreleaserbot@mynerva.io
+    email: goreleaserbot@pathbird.com
 
-  homepage: "https://mynerva.io/"
+  homepage: "https://pathbird.com/"
 
 brews:
   - tap:
-      owner: mynerva-io
+      owner: pathbird
       name: homebrew-tap
     commit_author: *commit_author

@@ -3,10 +3,10 @@ package graphql
 import (
 	"context"
 	"fmt"
-	"github.com/mynerva-io/author-cli/internal/auth"
-	"github.com/mynerva-io/author-cli/internal/config"
-	"github.com/mynerva-io/author-cli/internal/graphql/graphql_reflect"
-	"github.com/mynerva-io/author-cli/internal/graphql/transport"
+	"github.com/pathbird/pbauthor/internal/auth"
+	"github.com/pathbird/pbauthor/internal/config"
+	"github.com/pathbird/pbauthor/internal/graphql/graphql_reflect"
+	"github.com/pathbird/pbauthor/internal/graphql/transport"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"reflect"
@@ -19,7 +19,7 @@ type Client struct {
 
 func NewClient(auth *auth.Auth) *Client {
 	client := transport.NewClient(
-		fmt.Sprintf("%s/graphql", config.MynervaApiHost),
+		fmt.Sprintf("%s/graphql", config.PathbirdApiHost),
 	)
 	client.Log = func(s string) {
 		log.Debugf("[graphql client] %s\n", s)

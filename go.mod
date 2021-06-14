@@ -1,4 +1,4 @@
-module github.com/mynerva-io/author-cli
+module github.com/pathbird/pbauthor
 
 go 1.15
 

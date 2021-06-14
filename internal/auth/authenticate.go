@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/martian/log"
-	"github.com/mynerva-io/author-cli/internal/api"
-	"github.com/mynerva-io/author-cli/internal/config"
+	"github.com/pathbird/pbauthor/internal/api"
+	"github.com/pathbird/pbauthor/internal/config"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
@@ -65,13 +65,13 @@ func apiAuthenticate(email string, password string) (*apiLoginTokenResponse, err
 		return nil, errors.Wrap(err, "failed to marshal apiLoginRequest")
 	}
 
-	endpoint := fmt.Sprintf("%s%s", config.MynervaApiHost, "/api/auth/login")
+	endpoint := fmt.Sprintf("%s%s", config.PathbirdApiHost, "/api/auth/login")
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to construct login request")
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "mynerva-author-cli")
+	req.Header.Set("User-Agent", "pbauthor")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "request to api failed")

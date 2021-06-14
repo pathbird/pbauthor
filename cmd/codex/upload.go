@@ -3,11 +3,11 @@ package codex
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/mynerva-io/author-cli/internal/api"
-	"github.com/mynerva-io/author-cli/internal/auth"
-	"github.com/mynerva-io/author-cli/internal/codex"
-	"github.com/mynerva-io/author-cli/internal/config"
-	"github.com/mynerva-io/author-cli/internal/prompt"
+	"github.com/pathbird/pbauthor/internal/api"
+	"github.com/pathbird/pbauthor/internal/auth"
+	"github.com/pathbird/pbauthor/internal/codex"
+	"github.com/pathbird/pbauthor/internal/config"
+	"github.com/pathbird/pbauthor/internal/prompt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
@@ -74,7 +74,7 @@ var codexUploadCmd = &cobra.Command{
 		}
 
 		fmt.Printf("codexId: %s\n", res.CodexId)
-		fmt.Printf("url: %s/codex/%s\n", config.MynervaApiHost, res.CodexId)
+		fmt.Printf("url: %s/codex/%s\n", config.PathbirdApiHost, res.CodexId)
 
 		return nil
 	},

@@ -21,9 +21,9 @@ func getApiTokenCacheFile() (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "unable to determine auth file")
 	}
-	dir := path.Join(currentUser.HomeDir, ".mynerva")
+	dir := path.Join(currentUser.HomeDir, ".pathbird")
 	_ = os.MkdirAll(dir, 0700)
-	return path.Join(currentUser.HomeDir, ".mynerva", "auth.json"), nil
+	return path.Join(currentUser.HomeDir, ".pathbird", "auth.json"), nil
 }
 
 var authCache = (*Auth)(nil)

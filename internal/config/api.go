@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-var MynervaApiHost = (func() string {
-	value, set := os.LookupEnv("MYNERVA_API_HOST")
+var PathbirdApiHost = (func() string {
+	value, set := os.LookupEnv("PATHBIRD_API_HOST")
 	if set {
 		return strings.TrimRight(value, "/")
 	}
-	return "https://mynerva.io"
+	return "https://pathbird.com"
 })()
