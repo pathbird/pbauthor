@@ -29,6 +29,10 @@ func New(authToken string) *Client {
 	}
 }
 
+func (c *Client) Auth() string {
+	return c.authToken
+}
+
 type request struct {
 	route string
 	body  interface{}
@@ -117,7 +121,11 @@ func (r *response) unmarshalErrorBody() (*ErrorResponse, error) {
 				Details: nil,
 			}, nil
 		}
-		return nil, errors.Errorf("unknown api error response (status: %s, content-type: %s)", r.httpResponse.Status, contentType)
+		return nil, errors.Errorf(
+			"unknown api error response (status: %s, content-type: %s)",
+			r.httpResponse.Status,
+			contentType,
+		)
 	}
 
 	var errorResponse ErrorResponse
