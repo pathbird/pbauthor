@@ -44,8 +44,18 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().StringVar(&config.PathbirdApiHost, "api-host", config.PathbirdApiHost, "Pathbird API host")
+	rootCmd.PersistentFlags().BoolVar(
+		&verbose,
+		"debug",
+		false,
+		"enable verbose logging (for debugging)",
+	)
+	rootCmd.PersistentFlags().StringVar(
+		&config.PathbirdApiHost,
+		"api-host",
+		config.PathbirdApiHost,
+		"Pathbird API host",
+	)
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(auth.Cmd)

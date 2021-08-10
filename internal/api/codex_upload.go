@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 type UploadCodexRequest struct {
@@ -29,7 +30,7 @@ type CodexParseError struct {
 	Error          string `json:"error"`
 	Message        string `json:"message"`
 	SourcePosition string `json:"sourcePosition"`
-	SourceInfo struct{
+	SourceInfo     struct {
 		SourceContext struct {
 			Lines []string `json:"lines"`
 		} `json:"sourceContext"`
@@ -46,7 +47,9 @@ func (e *CodexParseFailedError) Error() string {
 
 var _ error = (*CodexParseFailedError)(nil)
 
-func (c *Client) UploadCodex(r *UploadCodexRequest) (*UploadCodexResponse, *CodexParseFailedError, error) {
+func (c *Client) UploadCodex(
+	r *UploadCodexRequest,
+) (*UploadCodexResponse, *CodexParseFailedError, error) {
 	fields := make(map[string]string)
 	fields["codexCategoryId"] = r.CodexCategoryId
 	if r.CodexId != "" {
@@ -65,18 +68,28 @@ func (c *Client) UploadCodex(r *UploadCodexRequest) (*UploadCodexResponse, *Code
 		return nil, nil, err
 	}
 	if statusError != nil {
-		e := statusError.error.Error
-		if e == "MySTParseFailedErr" || e == "CodexASTParseFailedErr" {
+		switch statusError.error.Error {
+		case "MySTParseFailedErr", "CodexASTParseFailedErr":
 			var parseError CodexParseFailedError
 			if err := json.Unmarshal(statusError.error.Details, &parseError); err != nil {
 				return nil, nil, errors.Wrap(err, "failed to unmarshal codex parse error details")
 			}
 			return nil, &parseError, nil
-		}
-		if statusError.error.Error == "" {
+
+		case "ErrUnauthenticated":
+			log.WithError(statusError).Debug("got ErrUnauthenticated")
+			return nil, nil, errors.New("You are not logged in (try running `pbauthor auth login`)")
+
+		case "":
 			return nil, nil, errors.Errorf("API returned an unknown error")
+
+		default:
+			return nil, nil, errors.Errorf(
+				"API returned an error: %s: %s",
+				statusError.error.Error,
+				statusError.error.Message,
+			)
 		}
-		return nil, nil, errors.Errorf("API returned an error: %s %s", statusError.error.Error, statusError.error.Message)
 	}
 	resp := &UploadCodexResponse{}
 	err = res.UnmarshalJson(resp)

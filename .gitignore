@@ -5,6 +5,7 @@
 *.so
 *.dylib
 main
+pbauthor
 dist/
 
 # Test binary, built with `go test -c`

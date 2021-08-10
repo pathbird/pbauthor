@@ -122,7 +122,8 @@ func (r *response) unmarshalErrorBody() (*ErrorResponse, error) {
 			}, nil
 		}
 		return nil, errors.Errorf(
-			"unknown api error response (status: %s, content-type: %s)",
+			"unknown api error response (route: %s, status: %s, content-type: %s)",
+			r.route,
 			r.httpResponse.Status,
 			contentType,
 		)

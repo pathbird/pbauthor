@@ -14,7 +14,10 @@ type UploadCodexOptions struct {
 	Dir string
 }
 
-func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodexResponse, *api.CodexParseFailedError, error) {
+func UploadCodex(
+	client *api.Client,
+	opts *UploadCodexOptions,
+) (*api.UploadCodexResponse, *api.CodexParseFailedError, error) {
 	config, err := GetOrInitCodexConfig(opts.Dir)
 	if err != nil {
 		return nil, nil, err
@@ -49,13 +52,16 @@ func UploadCodex(client *api.Client, opts *UploadCodexOptions) (*api.UploadCodex
 
 	config.Upload.CodexId = res.CodexId
 	if err := config.Save(); err != nil {
-		return nil, nil, errors.Wrap(err, "codex upload succeeded, but failed to save codex config file")
+		return nil, nil, errors.Wrap(
+			err,
+			"codex upload succeeded, but failed to save codex config file",
+		)
 	}
 
 	return res, nil, nil
 }
 
-const maxFiles = 20
+const maxFiles = 100
 
 // Get all the files associated with the codex.
 // Recursively walks the filesystem starting at `dir`.
