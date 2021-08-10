@@ -37,7 +37,7 @@ func PromptCourse(courses []graphql.CourseEdge) (*graphql.Course, error) {
 func PromptCodexCategory(cats []graphql.CodexCategory) (*graphql.CodexCategory, error) {
 	// Meow!
 	if len(cats) == 0 {
-		return nil, errors.New("course has categories")
+		return nil, errors.New("course has no codex categories")
 	}
 	if len(cats) == 1 {
 		return &cats[0], nil

@@ -87,7 +87,7 @@ var codexUploadCmd = &cobra.Command{
 			start := time.Now()
 			timeoutCtx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 			defer cancel()
-			log.Info("waiting for kernel build to complete (this may take up to 20 minutes)...")
+			log.Info("waiting for kernel build to complete (this may take a while, please be patient!)...")
 			kernelStatus, err := codex.WaitForKernelBuildCompleted(
 				timeoutCtx,
 				graphql.NewClient(auth),
@@ -117,7 +117,7 @@ var codexUploadCmd = &cobra.Command{
 			log.Info("not waiting for kernel build to complete (--no-wait was set)")
 		}
 
-		fmt.Printf(successf("Successfully uploaded codex: %s", detailsUrl))
+		fmt.Println(successf("Successfully uploaded codex: %s", detailsUrl))
 
 		return nil
 	},
