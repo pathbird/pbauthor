@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pathbird/pbauthor/internal/config"
+	"github.com/pathbird/pbauthor/internal/version"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 type Client struct {
@@ -157,7 +157,7 @@ func (r *response) UnmarshalJson(target interface{}) error {
 	return nil
 }
 
-const userAgent = `pbauthor`
+var userAgent = `pbauthor ` + version.Version
 
 func (c *Client) postJson(r *request) (*response, error) {
 	reqBody, err := json.Marshal(r.body)
@@ -185,21 +185,38 @@ func (c *Client) postJson(r *request) (*response, error) {
 }
 
 type multipartRequest struct {
-	route  string
-	fields map[string]string
-	files  []FileRef
+	// The API route to send the request to
+	route string
+	// Serialized to JSON and given to the Pathbird API as request.json
+	payload interface{}
+	// An array of files to attach
+	files []FileRef
 }
 
+// Send a multipart form request to the Pathbird API.
+// NOTE:
+//		To ease the annoyance of serializing/deserializing request payloads
+//		to/from the multipart format (in which it's hard to deal with nested
+//		objects, arrays, etc.), we always attach the request body as a file
+//		field named request.json.
 func (c *Client) postMultipart(r *multipartRequest) (*response, error) {
 	body := &bytes.Buffer{}
 	w := multipart.NewWriter(body)
-	for fieldname, value := range r.fields {
-		log.Debugf("setting field: %s", fieldname)
-		err := w.WriteField(fieldname, value)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to create api request body")
-		}
+
+	// Attach the body as request.json
+	requestPayload, err := json.Marshal(r.payload)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to serialize request to JSON")
 	}
+	f, err := w.CreateFormFile("request.json", "request.json")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create form file for request.json")
+	}
+	if _, err := f.Write(requestPayload); err != nil {
+		return nil, errors.Wrapf(err, "failed to write body for request.json")
+	}
+
+	// Attach supplemental files
 	for _, file := range r.files {
 		// We just always add files underneath the "files" key since that's what every
 		// Pathbird API endpoint expects
@@ -209,23 +226,24 @@ func (c *Client) postMultipart(r *multipartRequest) (*response, error) {
 			return nil, errors.Wrap(err, "failed to create api request body")
 		}
 	}
-	err := w.Close()
+
+	// Finalize the writer
+	err = w.Close()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create api request body")
 	}
 
+	// Send the request
 	endpoint := fmt.Sprintf("%s/%s", c.host, r.route)
 	req, err := http.NewRequest("POST", endpoint, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", w.FormDataContentType())
-
 	httpResponse, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
-
 	return &response{
 		route:        r.route,
 		httpResponse: httpResponse,

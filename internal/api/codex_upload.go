@@ -14,11 +14,17 @@ type UploadCodexRequest struct {
 
 	// required
 	// the files that comprise the codex bundle
-	Files []FileRef
+	Files []FileRef `json:"-"`
 
 	// optional
 	// if specified, replace this codex instead of uploading a new codex
-	CodexId string `json:"codexId,omitempty"`
+	CodexId string `json:"replaceCodexId,omitempty"`
+
+	KernelOptions KernelOptions `json:"kernelOptions"`
+}
+
+type KernelOptions struct {
+	SystemPackages []string `json:"systemPackages,omitempty"`
 }
 
 type UploadCodexResponse struct {
@@ -50,15 +56,10 @@ var _ error = (*CodexParseFailedError)(nil)
 func (c *Client) UploadCodex(
 	r *UploadCodexRequest,
 ) (*UploadCodexResponse, *CodexParseFailedError, error) {
-	fields := make(map[string]string)
-	fields["codexCategoryId"] = r.CodexCategoryId
-	if r.CodexId != "" {
-		fields["replaceCodexId"] = r.CodexId
-	}
 	res, err := c.postMultipart(&multipartRequest{
-		route:  "author/upload-codex",
-		fields: fields,
-		files:  r.Files,
+		route:   "author/upload-codex",
+		payload: r,
+		files:   r.Files,
 	})
 	if err != nil {
 		return nil, nil, err

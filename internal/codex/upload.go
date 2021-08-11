@@ -40,6 +40,9 @@ func UploadCodex(
 		CodexCategoryId: config.Upload.CodexCategory,
 		Files:           files,
 		CodexId:         config.Upload.CodexId,
+		KernelOptions: api.KernelOptions{
+			SystemPackages: config.Kernel.SystemPackages,
+		},
 	}
 
 	res, parseErr, err := client.UploadCodex(req)

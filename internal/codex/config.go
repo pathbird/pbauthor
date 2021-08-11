@@ -13,16 +13,27 @@ const ConfigFileName = "codex.toml"
 
 type Config struct {
 	Upload UploadConfig `toml:"upload"`
+	Kernel KernelConfig `toml:"kernel"`
 
 	configFile string
 }
 
 type UploadConfig struct {
-	CodexCategory string `toml:"codex_category,omitempty"`
-	Name          string `toml:"name,omitempty"`
-
-	// The id of the codex (if being re-uploaded)
+	// The ID of the codex category where the codex will be uploaded.
+	CodexCategory string `toml:"codex_category"`
+	// The name of the codex (as displayed in the Pathbird UI).
+	Name string `toml:"name"`
+	// The ID of the codex (if being re-uploaded).
 	CodexId string `toml:"codex_id,omitempty"`
+}
+
+type KernelConfig struct {
+	// The Docker image to use when running the kernel.
+	// This overrides all other kernel config options.
+	Image string `toml:"image,omitempty"`
+	// An array of additional (usually Debian) packages to install
+	// (e.g., {"texlive-latex-base"} if the `latex` command is required).
+	SystemPackages []string `toml:"system_packages"`
 }
 
 func (c *Config) Unmarshal(data []byte) error {
@@ -81,7 +92,7 @@ func GetOrInitCodexConfig(dirname string) (*Config, error) {
 	configFilePath := filepath.Join(dirname, ConfigFileName)
 	if _, err := os.Stat(configFilePath); err != nil {
 		if os.IsNotExist(err) {
-			return initConfig(dirname)
+			return InitConfig(dirname)
 		}
 		return nil, errors.Wrap(err, "unable to stat codex config file")
 	}

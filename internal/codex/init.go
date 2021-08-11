@@ -12,7 +12,7 @@ import (
 )
 
 // Initialize a new codex config file
-func initConfig(dirname string) (*Config, error) {
+func InitConfig(dirname string) (*Config, error) {
 	// Look for a codex file before initializing
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
