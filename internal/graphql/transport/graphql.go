@@ -85,10 +85,8 @@ func (c *Client) logf(format string, args ...interface{}) {
 // If the request fails or the server returns an error, the first error
 // will be returned.
 func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
+	if err := ctx.Err(); err != nil {
+		return err
 	}
 	if len(req.files) > 0 && !c.useMultipartForm {
 		return errors.New("cannot send files with PostFields option")
@@ -118,7 +116,7 @@ func (c *Client) runWithJSON(ctx context.Context, req *Request, resp interface{}
 	}
 	r, err := http.NewRequest(http.MethodPost, c.endpoint, &requestBody)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "instantiating http request")
 	}
 	r.Close = c.closeReq
 	r.Header.Set("Content-Type", "application/json; charset=utf-8")
@@ -132,7 +130,7 @@ func (c *Client) runWithJSON(ctx context.Context, req *Request, resp interface{}
 	r = r.WithContext(ctx)
 	res, err := c.httpClient.Do(r)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "http request failed")
 	}
 	defer res.Body.Close()
 	var buf bytes.Buffer

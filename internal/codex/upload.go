@@ -87,9 +87,16 @@ func getCodexFiles(_ *Config, dir string) ([]api.FileRef, error) {
 			return nil
 		}
 
+		// Don't upload any hidden files
 		if isHidden {
 			return nil
 		}
+
+		// Don't upload special files that we only use for configuration
+		if info.Name() == "codex.toml" {
+			return nil
+		}
+
 		relpath, err := filepath.Rel(dir, path)
 		if err != nil {
 			return errors.Wrapf(err, "couldn't determine relative file path: %s", path)

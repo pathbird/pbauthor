@@ -184,6 +184,21 @@ func (c *Client) postJson(r *request) (*response, error) {
 	}, nil
 }
 
+func (c *Client) newRequest(
+	method string,
+	route string,
+	contentType string,
+	body io.Reader,
+) (*http.Request, error) {
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", c.host, route), body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("User-Agent", userAgent)
+	return req, nil
+}
+
 type multipartRequest struct {
 	// The API route to send the request to
 	route string

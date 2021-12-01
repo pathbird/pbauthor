@@ -30,11 +30,15 @@ func (f *FileRef) addToWriter(fieldname string, w *multipart.Writer) error {
 	if err != nil {
 		return err
 	}
+	return f.copyTo(part)
+}
+
+func (f *FileRef) copyTo(w io.Writer) error {
 	file, err := os.Open(f.FsPath)
 	if err != nil {
 		return errors.Wrapf(err, "couldn't open file (%s)", f.FsPath)
 	}
-	_, err = io.Copy(part, file)
+	_, err = io.Copy(w, file)
 	if err != nil {
 		return errors.Wrapf(err, "failed to copy file (%s)", f.FsPath)
 	}

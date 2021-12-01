@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/coreos/go-semver v0.3.0
+	github.com/djherbis/buffer v1.2.0
+	github.com/djherbis/nio v2.0.3+incompatible
 	github.com/fatih/color v1.7.0
 	github.com/google/martian v2.1.0+incompatible
 	github.com/lunixbochs/vtclean v1.0.0 // indirect

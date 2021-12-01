@@ -20,6 +20,7 @@ type Client struct {
 func NewClient(auth *auth.Auth) *Client {
 	client := transport.NewClient(
 		fmt.Sprintf("%s/graphql", config.PathbirdApiHost),
+		transport.ImmediatelyCloseReqBody(),
 	)
 	client.Log = func(s string) {
 		log.Debugf("[graphql client] %s\n", s)
@@ -39,7 +40,11 @@ func (c *Client) Run(ctx context.Context, req *transport.Request, res interface{
 	return c.Client.Run(ctx, req, res)
 }
 
-func (c *Client) queryAndUnmarshall(ctx context.Context, v interface{}, opts ...graphql_reflect.BuildQueryOpt) error {
+func (c *Client) queryAndUnmarshall(
+	ctx context.Context,
+	v interface{},
+	opts ...graphql_reflect.BuildQueryOpt,
+) error {
 	frag, err := graphql_reflect.BuildQuery(reflect.TypeOf(v), opts...)
 	if err != nil {
 		return errors.Wrap(err, "couldn't build GraphQL fragment")
